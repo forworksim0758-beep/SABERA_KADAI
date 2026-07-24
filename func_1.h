@@ -90,6 +90,8 @@ typedef struct {
 
 int selectDifficulty(gameStatus *gs);
 int gameLoop(gameStatus *gs);
+wchar_t normalizeKana(wchar_t c);
+wchar_t effectiveLastChar(wchar_t *w);
 int applyRules(gameStatus *gs, wchar_t *prev, wchar_t *w);
 int judgeContinue(gameStatus *gs);
 
