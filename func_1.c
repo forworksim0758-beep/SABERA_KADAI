@@ -21,33 +21,36 @@ int selectDifficulty(gameStatus *gs)
         if (!wcscmp(buf, L"EASY")) {
             gs->mode = GM_EASY;
             gs->hp = 5;
-            return EXIT_SUCCESS;
+            return SDR_OK;
         } else if (!wcscmp(buf, L"NORMAL")) {
             gs->mode = GM_NORMAL;
             gs->hp = 1;
-            return EXIT_SUCCESS;
+            return SDR_OK;
         } else if (!wcscmp(buf, L"DIFFICULT")) {
             gs->mode = GM_DIFFICULT;
             gs->hp = 1;
-            return EXIT_SUCCESS;
+            return SDR_OK;
+        } else if (!wcscmp(buf, L"QUIT")) {
+            return SDR_QUIT;
         }
 
         fwprintf(stdout, L"> Invalid difficulty -> Retry.\n");
     }
 
-    return EXIT_FAILURE;
+    return SDR_ERR;
 }
 
 int gameLoop(gameStatus *gs)
 {
-    int initHp = gs->hp;
     int errFlag = 0;
     wchar_t *prev = NULL;
     wchar_t *word = NULL;
 
     fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
     while (getWord(&word) == GWR_OK) {
-        if (commandControl(gs, initHp, &prev, word)) continue;
+        CCR ccRes = commandControl(word);
+        if (ccRes == CCR_CONTINUE) continue;
+        if (ccRes == CCR_RESTART) break;
 
         if (applyRules(gs, prev, word) != ARR_ALW) {
             free(word);
@@ -232,27 +235,22 @@ int isRetryCommand(wchar_t *w)
     return !wcscmp(w, L"Retry");
 }
 
-int commandControl(gameStatus *gs, int initHp, wchar_t **prev, wchar_t *word)
+int commandControl(wchar_t *word)
 {
     if (isRetryCommand(word)) {
         free(word);
-        free(*prev);
-        *prev = NULL;
-        free_table();
-        gs->hp = initHp;
-        fwprintf(stdout, L"> Reset -> Restart.\n");
-        fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
-        return 1;
+        fwprintf(stdout, L"> Restart -> Back to difficulty selection.\n");
+        return CCR_RESTART;
     }
 
     unsigned int prevNUM;
     if (isPrevCommand(word, &prevNUM)) {
         showPrev(prevNUM);
         free(word);
-        return 1;
+        return CCR_CONTINUE;
     }
 
-    return 0;
+    return CCR_NONE;
 }
 
 int isPrevCommand(wchar_t *w, unsigned int *n)
@@ -282,9 +280,9 @@ void showPrev(unsigned int n)
     }
 
     if (wc == NULL) {
-        fwprintf(stdout, L"> prev%ld is out of range.\n", n);
+        fwprintf(stdout, L"> prev%u is out of range.\n", n);
     } else {
-        fwprintf(stdout, L"> prev%ld : %ls\n", n, wc->word);
+        fwprintf(stdout, L"> prev%u : %ls\n", n, wc->word);
     }
 }
 
