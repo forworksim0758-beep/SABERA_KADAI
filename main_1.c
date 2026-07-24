@@ -13,14 +13,21 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    gameStatus gs;
-    fwprintf(stdout, L"> Select difficulty (EASY/NORMAL/DIFFICULT):\n");
-    if (selectDifficulty(&gs) != EXIT_SUCCESS) {
-        free_dictionary();
-        return EXIT_FAILURE;
+    while (1) {
+        gameStatus gs;
+        fwprintf(stdout, L"> Select difficulty (EASY/NORMAL/DIFFICULT/QUIT):\n");
+
+        SDR sdRes = selectDifficulty(&gs);
+        if (sdRes == SDR_QUIT) {
+            break;
+        } else if (sdRes == SDR_ERR) {
+            free_dictionary();
+            return EXIT_FAILURE;
+        }
+
+        gameLoop(&gs);
     }
 
-    gameLoop(&gs);
     free_dictionary();
     return EXIT_SUCCESS;
 }
