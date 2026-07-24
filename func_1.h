@@ -56,6 +56,20 @@ typedef enum {
 
 }GM;
 
+typedef enum {
+    SDR_ERR = -1,
+    SDR_OK,
+    SDR_QUIT,
+
+}SDR;
+
+typedef enum {
+    CCR_NONE,
+    CCR_CONTINUE,
+    CCR_RESTART,
+
+}CCR;
+
 
 #define WHTSIZE 4096
 typedef struct wardsChain {
@@ -89,7 +103,7 @@ unsigned int hashValue (wchar_t *w);
 int isRetryCommand(wchar_t *w);
 int isPrevCommand(wchar_t *w, unsigned int *n);
 void showPrev(unsigned int n);
-int commandControl(gameStatus *gs, int initHp, wchar_t **prev, wchar_t *word);
+int commandControl(wchar_t *word);
 
 unsigned int dictHash(wchar_t *w);
 int loadDictionary(const char *path);
