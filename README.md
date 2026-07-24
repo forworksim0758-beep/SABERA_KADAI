@@ -121,3 +121,18 @@ make
   「あいあんほげ」を入力すると拒否される。このとき失敗にはならない。
 
   <img width="639" height="70" alt="image" src="https://github.com/user-attachments/assets/5d4250d2-2c2b-4965-980c-825094f86fea" />
+
+## 参考
+
+- [djb2ハッシュアルゴリズムの解説と実装 #C++ - Qiita](https://qiita.com/yuu_7_ns/items/cbdc185c179f3e418eb5)
+- [C言語のwchar.hライブラリを使いこなす：基本から応用まで徹底解説 - ITtrip](https://ittrip.xyz/c/c-lang-wcharh-guide)
+
+### AIを使ったもの
+
+- 誤字脱字の修正とエラー原因の特定
+- 関数などの名称の候補
+- wchar.h、locale.hの使い方と仕様の検索
+- setlocale使用中に標準出力を使う方法の検索
+- 単語記録における木構造とハッシュテーブルの比較
+- ハッシュ値の効果的な算出方法
+- skkdicからtxtファイルの作成
