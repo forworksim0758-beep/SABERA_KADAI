@@ -126,6 +126,7 @@ make
 
 - [djb2ハッシュアルゴリズムの解説と実装 #C++ - Qiita](https://qiita.com/yuu_7_ns/items/cbdc185c179f3e418eb5)
 - [C言語のwchar.hライブラリを使いこなす：基本から応用まで徹底解説 - ITtrip](https://ittrip.xyz/c/c-lang-wcharh-guide)
+- [マークダウン(Markdown)記法完全チートシート #Markdown - Qiita](https://qiita.com/masterpiecehack/items/990683b706b70b88b4c7)
 
 ### AIを使ったもの
 
@@ -136,3 +137,4 @@ make
 - 単語記録における木構造とハッシュテーブルの比較
 - ハッシュ値の効果的な算出方法
 - skkdicからtxtファイルの作成
+- マークダウンの書き方
