@@ -74,8 +74,12 @@ int gameLoop(gameStatus *gs)
         JCR jcrRes = judgeContinue(gs);
         if (jcrRes == JCR_CONTINUE) {
             fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
+            if (prev != NULL) {
+                fwprintf(stdout, L"> Next word must start with: %lc\n", normalizeKana(effectiveLastChar(prev)));
+            }
             continue;
         } else if (jcrRes == JCR_END) {
+            fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
             fwprintf(stdout, L"> GameOver -> Quit.\n");
             break;
         }else {
@@ -88,6 +92,35 @@ int gameLoop(gameStatus *gs)
     free_table();
     if (errFlag) return EXIT_FAILURE;
     return EXIT_SUCCESS;
+}
+
+wchar_t normalizeKana(wchar_t c)
+{
+    switch (c) {
+        case L'ぁ': return L'あ';
+        case L'ぃ': return L'い';
+        case L'ぅ': return L'う';
+        case L'ぇ': return L'え';
+        case L'ぉ': return L'お';
+        case L'っ': return L'つ';
+        case L'ゃ': return L'や';
+        case L'ゅ': return L'ゆ';
+        case L'ょ': return L'よ';
+        case L'ゎ': return L'わ';
+        default: return c;
+    }
+}
+
+wchar_t effectiveLastChar(wchar_t *w)
+{
+    size_t len = wcslen(w);
+    long i = (long)len - 1;
+
+    while (i > 0 && w[i] == L'ー') {
+        i--;
+    }
+
+    return w[i];
 }
 
 int applyRules(gameStatus *gs, wchar_t *prev, wchar_t *w)
@@ -104,31 +137,27 @@ int applyRules(gameStatus *gs, wchar_t *prev, wchar_t *w)
     }
 
     if (checkWard_InDictionary(w) != DWR_FND) {
-        gs->hp--;
         fwprintf(stdout, L"> This word is not found in dictionary -> Retry.\n");
-        fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
-        return ARR_DNY;
-    }
-
-    if (w[gwlen - 1] == L'ん') {
-        gs->hp--;
-        fwprintf(stdout, L"> This input`s tail is 「ん」 -> Retry.\n");
-        fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
         return ARR_DNY;
     }
 
     if (prev == NULL) return ARR_ALW;
 
     size_t pwlen = wcslen(prev);
-    if (prev[pwlen - 1] != w[0]) {
-        gs->hp--;
-        fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
+    if (normalizeKana(effectiveLastChar(prev)) != normalizeKana(w[0])) {
+        fwprintf(stdout, L"> This word is not continuous. -> Retry\n");
         return ARR_DNY;
     }
 
     if (gs->mode == GM_DIFFICULT && gwlen < pwlen) {
         gs->hp--;
-        fwprintf(stdout, L"> REST HP = %d\n", gs->hp);
+        fwprintf(stdout, L"> This word-length is less than previous.\n");
+        return ARR_DNY;
+    }
+
+    if (w[gwlen - 1] == L'ん') {
+        gs->hp--;
+        fwprintf(stdout, L"> This input`s tail is 「ん」.\n");
         return ARR_DNY;
     }
 
@@ -232,7 +261,7 @@ int createChain(wardsChain **wc, wchar_t *w)
 
 int isRetryCommand(wchar_t *w)
 {
-    return !wcscmp(w, L"Retry");
+    return !wcscmp(w, L"restart");
 }
 
 int commandControl(wchar_t *word)
